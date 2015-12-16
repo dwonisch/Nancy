@@ -39,6 +39,27 @@
                     Environment.NewLine);
         }
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViewNotFoundException"/>.
+        /// </summary>
+        /// <param name="viewName">The name of the view that was being located.</param>
+        /// <param name="availableViewEngineExtensions">List of available view extensions that can be rendered by the available view engines.</param>
+        /// <param name="inspectedLocations">The locations that were inspected for the view.</param>
+        /// <param name="rootPathProvider">An <see cref="IRootPathProvider"/> instance.</param>
+        public ViewNotFoundException(string viewName, string[] availableViewEngineExtensions)
+        {
+            this.ViewName = viewName;
+            this.AvailableViewEngineExtensions = availableViewEngineExtensions;
+
+            this.message = String.Format(
+                    "Unable to locate view '{0}'{2}Currently available view engine extensions: {1}{2}",
+                    this.ViewName,
+                    string.Join(",", this.AvailableViewEngineExtensions),
+                    Environment.NewLine);
+        }
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewNotFoundException"/>
         /// </summary>

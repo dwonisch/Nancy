@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Security.Claims;
 
     /// <summary>
@@ -16,8 +17,7 @@
         /// <param name="engine">The razor view engine instance that the helpers are being used by.</param>
         /// <param name="renderContext">The <see cref="IRenderContext"/> that the helper are being used by.</param>
         /// <param name="model">The model that is used by the page where the helpers are invoked.</param>
-        public HtmlHelpers(RazorViewEngine engine, IRenderContext renderContext, TModel model) : base(engine, renderContext)
-        {
+        public HtmlHelpers(RazorViewEngine engine, IRenderContext renderContext, TModel model) : base(engine, renderContext) {
             this.Model = model;
         }
 
@@ -38,6 +38,7 @@
         /// </summary>
         /// <param name="engine">The razor view engine instance that the helpers are being used by.</param>
         /// <param name="renderContext">The <see cref="IRenderContext"/> that the helper are being used by.</param>
+        /// <param name="factory"></param>
         protected HtmlHelpers(RazorViewEngine engine, IRenderContext renderContext)
         {
             this.Engine = engine;
@@ -55,6 +56,8 @@
         /// </summary>
         /// <value>An <see cref="IRenderContext"/> instance.</value>
         public IRenderContext RenderContext { get; set; }
+
+        private IViewFactory ViewFactory { get; set; }
 
         /// <summary>
         /// Renders a partial with the given view name.
@@ -75,6 +78,9 @@
         public IHtmlString Partial(string viewName, dynamic modelForPartial)
         {
             var view = this.RenderContext.LocateView(viewName, modelForPartial);
+
+            if (view == null)
+                throw new ViewNotFoundException(viewName, Engine.Extensions.ToArray());
 
             var response = this.Engine.RenderView(view, modelForPartial, this.RenderContext, true);
             Action<Stream> action = response.Contents;
